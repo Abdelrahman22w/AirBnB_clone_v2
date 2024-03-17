@@ -113,18 +113,31 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, args):
-        """ Create an object of any class"""
-        if not args:
-            print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+        def do_create(self, args):
+            """ Create an object of any class"""
+            try:
+                if not args:
+                    raise SyntaxError()
+                splits = args.split(' ')
+                new_inst = eval ('{}()'.format(splits[0]))
+                param = splits[1:]
+                for par in param:
+                    x, y = par.split("=")
+                    try:
+                        attr = HBNBCommand.check_attribute(y)
+                    except:
+                        continue
+                    if not attr:
+                        continue
+                    setattr(new_inst, x, attr)
+                new_inst.save()
+                print(new_inst.id)
+            except SyntaxError:
+                print("** class name missing **")
+            except NameError:
+                print("** class dowsn't exist **")
+
+                    
 
     def help_create(self):
         """ Help information for the create method """
@@ -314,6 +327,21 @@ class HBNBCommand(cmd.Cmd):
                 new_dict.__dict__.update({att_name: att_val})
 
         new_dict.save()  # save updates to file
+
+    def check_attribute(cls, attr):
+        """
+        Check if the attribute is correctrly formatted
+        """
+        if attr[0] is attr[-1] in ['"', "'"]:
+            return attr.strip('"\'').replace('_', ' ').replace('\\', '"')
+        else:
+            try:
+                try:
+                    return int(attr)
+                except ValueError:
+                    return float(attr)
+            except ValueError:
+                return None
 
     def help_update(self):
         """ Help information for the update class """
