@@ -23,10 +23,10 @@ class BaseModel:
                 unique=True)
     created_at = Column(DATETIME,
                         nullable=False,
-                        default=datetime.utcnow())
+                        default=datetime.now())
     updated_at = Column(DATETIME,
                         nullable=False,
-                        default=datetime.utcnow())
+                        default=datetime.now())
 
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
@@ -60,6 +60,12 @@ class BaseModel:
         storage.new(self)
         storage.save()
 
+
+    def delete(self):
+        '''deletes the current instance from the storage'''
+        from models import storage
+        storage.delete(self)
+
     def to_dict(self):
         """Convert instance into dict format"""
         dct = self.__dict__.copy()
@@ -70,8 +76,3 @@ class BaseModel:
         if '_sa_instance_state' in dct.keys():
             del(dct['_sa_instance_state'])
         return dct
-
-    def delete(self):
-        '''deletes the current instance from the storage'''
-        from models import storage
-        storage.delete(self)
