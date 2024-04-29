@@ -57,6 +57,9 @@ class FileStorage:
                     self.new(eval(name)(**o))
         except FileNotFoundError:
             pass
+        except ModuleNotFoundError:
+            pass
+
 
     def delete(self, obj=None):
         """Delete a given object from __objects, if it exists."""
